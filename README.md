@@ -10,7 +10,7 @@
 
 `@raini/pipes` is a set of monoids called Pipelines. Pipelines are lazy and do not get invoked until they are forked with `process` method.
 
-A Pipeline is a Monoid and can be concatenated with other Pipelines with `concat` which allows joining separate pieces of composed functions.
+A Pipeline is a Monoid and can be concatenated with other Pipelines with `p.concat` which allows joining separate sets of composed functions.
 
 ## Features
 
@@ -19,7 +19,7 @@ A Pipeline is a Monoid and can be concatenated with other Pipelines with `concat
 - Implements **Semigroup** (holds associativity) with `p.concat`
 - Implements **Monoid** (holds right identity and left identity) with `p.concat`
 - PromisePipeline allows abstracting from using Promises in composed functions - `promisePipeline.process` returns the only Promise to work with
-- Can be used both in Node and in browsers (JS transpiled to ES5)
+- Can be used both in Node and in browsers (transpiled to ES5)
 
 ## Installation
 
