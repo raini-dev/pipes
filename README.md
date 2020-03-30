@@ -17,7 +17,7 @@ Pipelines are Monoids and can be concatenated with other Pipelines using `p.conc
 - Composition of functions via `pipe`
 - Helper pipe methods, e.g. `pipeTap` or `extendPipe`
 - Implements **Semigroup** (holds associativity) with `p.concat`
-- Implements **Monoid** (holds right identity and left identity) with `p.concat`
+- Implements **Monoid** (holds right identity and left identity) with `p.concat` and `P.empty`
 - PromisePipeline allows abstracting from using Promises in composed functions - `promisePipeline.process` returns the only Promise to work with
 - Can be used both in Node and in browsers (transpiled to ES5)
 
