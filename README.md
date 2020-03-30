@@ -1,10 +1,10 @@
 # @raini/pipes
 
-[![Build Status](https://travis-ci.org/Raini-js/pipe.svg?branch=master)](https://travis-ci.org/Raini-js/pipe)
-[![codecov](https://codecov.io/gh/Raini-js/pipe/branch/master/graph/badge.svg)](https://codecov.io/gh/Raini-js/pipe)
-[![npm](https://img.shields.io/npm/dt/@raini/pipe.svg)](https://www.npmjs.com/package/@raini/pipe)
-[![npm](https://img.shields.io/npm/v/@raini/pipe.svg)](https://www.npmjs.com/package/@raini/pipe)
-[![licence: MIT](https://img.shields.io/npm/l/@raini/pipe.svg)](https://github.com/raini/pipe)
+[![Build Status](https://travis-ci.org/Raini-js/pipes.svg?branch=master)](https://travis-ci.org/Raini-js/pipes)
+[![codecov](https://codecov.io/gh/Raini-js/pipes/branch/master/graph/badge.svg)](https://codecov.io/gh/Raini-js/pipes)
+[![npm](https://img.shields.io/npm/dt/@raini/pipes.svg)](https://www.npmjs.com/package/@raini/pipes)
+[![npm](https://img.shields.io/npm/v/@raini/pipes.svg)](https://www.npmjs.com/package/@raini/pipes)
+[![licence: MIT](https://img.shields.io/npm/l/@raini/pipes.svg)](https://github.com/raini/pipes)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![versioning: @priestine/semantics](https://img.shields.io/badge/versioning-@priestine/semantics-912e5c.svg)](https://github.com/priestine/semantics)
 
