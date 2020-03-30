@@ -8,9 +8,9 @@
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![versioning: @priestine/semantics](https://img.shields.io/badge/versioning-@priestine/semantics-912e5c.svg)](https://github.com/priestine/semantics)
 
-`@raini/pipes` is a set of monoids called Pipelines. Pipelines are lazy and do not get invoked until they are forked with `process` method.
+`@raini/pipes` is a set of composable blocks called Pipelines. Pipelines are lazy and do not get invoked until they are forked with `process` method.
 
-A Pipeline is a Monoid and can be concatenated with other Pipelines with `p.concat` which allows joining separate sets of composed functions.
+Pipelines are Monoids and can be concatenated with other Pipelines using `p.concat` which allows joining separate sets of composed functions.
 
 ## Features
 
