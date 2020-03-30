@@ -1,0 +1,12 @@
+.idea
+node_modules/
+.DS_Store
+.cache/
+dist/
+coverage/
+.env
+tsconfig.tsbuildinfo
+*.d.ts
+*.map
+*.js
+!jest.config.js

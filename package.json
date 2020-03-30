@@ -1,0 +1,61 @@
+{
+  "name": "@raini/pipes",
+  "version": "0.0.0",
+  "description": "Simple and reusable pipelines for function composition.",
+  "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "fp",
+    "monoid",
+    "pipe",
+    "pipeline",
+    "middleware",
+    "asynchrony"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Raini-js/pipeline.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Raini-js/pipeline/issues"
+  },
+  "homepage": "https://raini.dev/docs/pipeline",
+  "author": {
+    "email": "priestine1.dev@gmail.com",
+    "name": "Sergei Orlov",
+    "url": "https://raini.dev"
+  },
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/jest": "^25.1.4",
+    "@types/node": "^13.9.5",
+    "@typescript-eslint/eslint-plugin": "^2.25.0",
+    "@typescript-eslint/parser": "^2.25.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "husky": "^4.2.3",
+    "jest": "^25.2.4",
+    "prettier": "^2.0.2",
+    "ts-jest": "^25.2.1",
+    "typescript": "^3.8.3"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "test:cover": "jest --coverage",
+    "format": "prettier src/**/*.ts *.md --write",
+    "lint:prettier": "prettier src/**/*.ts *.md --list-different",
+    "lint:eslint": "eslint \"src/**/*.ts\" --quiet",
+    "lint:tsc": "tsc --noEmit",
+    "lint": "npm run lint:tsc && npm run lint:prettier && npm run lint:eslint"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-push": "npm run lint && npm t"
+    }
+  }
+}

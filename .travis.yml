@@ -1,0 +1,33 @@
+sudo: false
+language: node_js
+node_js:
+  - "12"
+cache:
+  directories:
+    - node_modules
+
+stages:
+  - check
+  - name: cover
+    if: branch = master
+  - name: versioning
+    if: branch = master
+  - name: publish
+    if: tag IS present AND tag =~ ^v
+
+jobs:
+  include:
+    - stage: check
+      script:
+        - npm run lint
+        - npm run test
+    - stage: cover
+      script:
+        - npm run test:cover
+        - bash <(curl -s https://codecov.io/bash) -t "${CODECOV_TOKEN}" -f coverage/*.json
+    - stage: versioning
+      script:
+        - npx @priestine/semantics --prefix=v --user=priestine --password=${SEMANTICS_TOKEN} --write-to-changelog=false
+    - stage: publish
+      script:
+        - bash deploy_npm.sh
