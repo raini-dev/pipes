@@ -1,22 +1,5 @@
 import { extend, tap } from "./helpers";
 
-// export interface IAsyncPipe<T, U = T, N = T> {
-//   process(x?: N): Promise<U>;
-// }
-
-// export interface IPipe<TProcess, TCurrent> {
-//   map<TNext>(
-//     f: (x: TCurrent) => TNext
-//   ): IPipe<TProcess, TNext extends Promise<infer P> ? P : TNext>;
-//   fs: Array<Function>;
-//   process: TProcess;
-// }
-
-// export interface ISyncPipe<TCurrent, TNext, TReserved>
-//   extends IPipe<(f: () => TReserved) => TNext, TCurrent> {
-//   process(f: () => TReserved): TNext;
-// }
-
 export class PromisePipeline<TCurrent, TNext, TReserved = TCurrent> {
   public static of<TCurrent, TNext>(
     f: (x: TCurrent) => TNext,
@@ -105,4 +88,24 @@ export class PromisePipeline<TCurrent, TNext, TReserved = TCurrent> {
 
     return result;
   }
+}
+
+export function pipeP<TCurrent, TNext = TCurrent>(
+  f: (x: TCurrent) => TNext,
+): PromisePipeline<
+  TCurrent extends Promise<infer U> ? U : TCurrent,
+  TNext extends Promise<infer U> ? U : TNext,
+  TCurrent extends Promise<infer U> ? U : TCurrent
+> {
+  return PromisePipeline.of(f);
+}
+
+export function pipeExtendP<TCurrent, TNext = TCurrent>(
+  f: (x: TCurrent) => TNext,
+): PromisePipeline<
+  TCurrent extends Promise<infer U> ? U : TCurrent & TNext extends Promise<infer U> ? U : TNext,
+  TCurrent extends Promise<infer U> ? U : TCurrent & TNext extends Promise<infer U> ? U : TNext,
+  TCurrent
+> {
+  return PromisePipeline.empty<TCurrent, TCurrent & TNext>().pipeExtend(f);
 }
