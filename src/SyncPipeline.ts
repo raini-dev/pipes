@@ -72,3 +72,15 @@ export class SyncPipeline<TCurrent, TNext, TReserved = TCurrent> {
     return this._fs.reduce((acc, fn) => fn(acc), f() as any);
   }
 }
+
+export function pipe<TCurrent, TNext = TCurrent>(
+  f: (x: TCurrent) => TNext,
+): SyncPipeline<TCurrent, TNext, TCurrent> {
+  return SyncPipeline.of(f);
+}
+
+export function pipeExtend<TCurrent, TNext = TCurrent>(
+  f: (x: TCurrent) => TNext,
+): SyncPipeline<TCurrent, TCurrent & TNext, TCurrent> {
+  return SyncPipeline.empty<TCurrent, TCurrent & TNext>().pipeExtend(f);
+}
