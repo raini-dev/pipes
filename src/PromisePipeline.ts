@@ -26,9 +26,9 @@ export class PromisePipeline<TCurrent, TNext, TReserved = TCurrent> {
   }
 
   public static empty<TCurrent, TNext = TCurrent, TReserved = TCurrent>(): PromisePipeline<
-    TCurrent,
-    TNext,
-    TReserved
+    TCurrent extends Promise<infer U> ? U : TCurrent,
+    TNext extends Promise<infer U> ? U : TNext,
+    TReserved extends Promise<infer U> ? U : TCurrent
   > {
     return new PromisePipeline([]);
   }
@@ -90,22 +90,22 @@ export class PromisePipeline<TCurrent, TNext, TReserved = TCurrent> {
   }
 }
 
-export function pipeP<TCurrent, TNext = TCurrent>(
+export function pipeP<TCurrent, TNext = TCurrent, TReserved = TCurrent>(
   f: (x: TCurrent) => TNext,
 ): PromisePipeline<
   TCurrent extends Promise<infer U> ? U : TCurrent,
   TNext extends Promise<infer U> ? U : TNext,
-  TCurrent extends Promise<infer U> ? U : TCurrent
+  TReserved extends Promise<infer U> ? U : TCurrent
 > {
-  return PromisePipeline.of(f);
+  return PromisePipeline.of((f as unknown) as any) as any;
 }
 
-export function pipeExtendP<TCurrent, TNext = TCurrent>(
+export function pipeExtendP<TCurrent, TNext = TCurrent, TReserved = TCurrent>(
   f: (x: TCurrent) => TNext,
 ): PromisePipeline<
   TCurrent extends Promise<infer U> ? U : TCurrent & TNext extends Promise<infer U> ? U : TNext,
   TCurrent extends Promise<infer U> ? U : TCurrent & TNext extends Promise<infer U> ? U : TNext,
-  TCurrent
+  TReserved extends Promise<infer U> ? U : TCurrent
 > {
-  return PromisePipeline.empty<TCurrent, TCurrent & TNext>().pipeExtend(f);
+  return PromisePipeline.empty().pipeExtend((f as unknown) as any) as any;
 }
