@@ -1,4 +1,4 @@
-import { PromisePipeline } from "./PromisePipeline";
+import { PromisePipeline, pipeP, pipeExtendP } from "./PromisePipeline";
 
 const f = <T>(x: T): T => x;
 const id = <T>(x: T): T => x;
@@ -90,5 +90,29 @@ describe("SyncPipe", () => {
           .catch(id),
       );
     });
+  });
+});
+
+describe("pipeP", () => {
+  const f = Number;
+
+  it("should return a PromisePipeline", () => {
+    expect(pipeP(f)).toBeInstanceOf(PromisePipeline);
+  });
+
+  it("should pipe the function provided as an argument", async () => {
+    expect(await pipeP(f).process(() => "1")).toEqual(1);
+  });
+});
+
+describe("pipeExtendP", () => {
+  const f = ({ x }: { x: string }) => ({ y: x });
+
+  it("should return a PromisePipeline", () => {
+    expect(pipeExtendP(f)).toBeInstanceOf(PromisePipeline);
+  });
+
+  it("should pipeExtend the function provided as an argument", async () => {
+    expect(await pipeExtendP(f).process(() => ({ x: "test" }))).toEqual({ x: "test", y: "test" });
   });
 });

@@ -1,4 +1,4 @@
-import { SyncPipeline } from "./SyncPipeline";
+import { SyncPipeline, pipe, pipeExtend } from "./SyncPipeline";
 
 const f = <T>(): T => ({} as any);
 const id = <T>(x: T): T => x;
@@ -80,5 +80,29 @@ describe("SyncPipe", () => {
           .process(() => "test"),
       ).toEqual("TEST");
     });
+  });
+});
+
+describe("pipe", () => {
+  const f = Number;
+
+  it("should return a SyncPipe", () => {
+    expect(pipe(f)).toBeInstanceOf(SyncPipeline);
+  });
+
+  it("should pipe the function provided as an argument", () => {
+    expect(pipe(f).process(() => "1")).toEqual(1);
+  });
+});
+
+describe("pipeExtend", () => {
+  const f = ({ x }: { x: string }) => ({ y: x });
+
+  it("should return a SyncPipeline", () => {
+    expect(pipeExtend(f)).toBeInstanceOf(SyncPipeline);
+  });
+
+  it("should pipeExtend the function provided as an argument", () => {
+    expect(pipeExtend(f).process(() => ({ x: "test" }))).toEqual({ x: "test", y: "test" });
   });
 });
