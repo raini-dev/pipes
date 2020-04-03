@@ -32,16 +32,16 @@ npm i -S @raini/pipes
 ### PromisePipeline
 
 ```typescript
-import { PromisePipeline } from "@raini/pipes";
-import * as rl from "readline";
+import { PromisePipeline } from "@raini/pipes"
+import * as rl from "readline"
 
-const addSpaceIfMissing = (q: string): string => (q.endsWith(" ") ? q : q.concat(" "));
-const toObject = (q: string) => ({ q });
-const createReadLine = () => ({ rl: rl.createInterface(process.stdin, process.stdout) });
-const askQuestionAsync = ({ rl, q }) => new Promise((res) => rl.question(q, (a: string) => res(a)));
-const applyGreenColor = (x: string) => `\x1b[32m${x}\x1b[0m`;
-const log = console.log;
-const exit = () => process.exit(0);
+const addSpaceIfMissing = (q: string): string => (q.endsWith(" ") ? q : q.concat(" "))
+const toObject = (q: string) => ({ q })
+const createReadLine = () => ({ rl: rl.createInterface(process.stdin, process.stdout) })
+const askQuestionAsync = ({ rl, q }) => new Promise((res) => rl.question(q, (a: string) => res(a)))
+const applyGreenColor = (x: string) => `\x1b[32m${x}\x1b[0m`
+const log = console.log
+const exit = () => process.exit(0)
 
 PromisePipeline.of(addSpaceIfMissing)
   .pipe(toObject)
@@ -50,34 +50,34 @@ PromisePipeline.of(addSpaceIfMissing)
   .pipe(applyGreenColor)
   .pipeTap(log) // Execute function on the argument and return the argument
   .process(() => "What is the answer to life, the universe and everything?")
-  .then(exit);
+  .then(exit)
 ```
 
 ### SyncPipeline
 
 ```typescript
-import { SyncPipeline } from "@raini/pipes";
+import { SyncPipeline } from "@raini/pipes"
 
-const isOdd = (num: number) => num % 2 == 0;
-const negate = <T>(f: (x: T) => any) => (x: T) => !f(x);
-const filterOutOddNumbers = (nums: number[]) => nums.filter(negate(isOdd));
-const multiplyBy2 = (num: number) => num * 2;
-const multiplyItemsBy2 = (nums: number[]) => nums.map(multiplyBy2);
-const log = console.log;
+const isOdd = (num: number) => num % 2 == 0
+const negate = <T>(f: (x: T) => any) => (x: T) => !f(x)
+const filterOutOddNumbers = (nums: number[]) => nums.filter(negate(isOdd))
+const multiplyBy2 = (num: number) => num * 2
+const multiplyItemsBy2 = (nums: number[]) => nums.map(multiplyBy2)
+const log = console.log
 
 const result = SyncPipeline.of(filterOutOddNumbers)
   .pipeTap(log) // [ 1, 3, 5 ]
   .pipe(multiplyItemsBy2)
-  .process(() => [1, 2, 3, 4, 5]);
+  .process(() => [1, 2, 3, 4, 5])
 
-log(result); // [ 2, 6, 10 ]
+log(result) // [ 2, 6, 10 ]
 
 // A fun thing using pipeExtend (instead of pipe) for multiplying items by 2
 
 const result2 = SyncPipeline.of(filterOutOddNumbers)
   .pipeTap(log) // [ 1, 3, 5 ]
   .pipeExtend(multiplyItemsBy2)
-  .process(() => [1, 2, 3, 4, 5]);
+  .process(() => [1, 2, 3, 4, 5])
 
-log(result2); // [ 1, 3, 5, 2, 6, 10 ]
+log(result2) // [ 1, 3, 5, 2, 6, 10 ]
 ```

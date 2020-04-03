@@ -1,24 +1,24 @@
-import { extend, tap } from "./helpers";
+import { extend, tap } from "./helpers"
 
 export class SyncPipeline<TCurrent, TNext, TReserved = TCurrent> {
   public static of<TCurrent, TNext>(
     f: (x: TCurrent) => TNext,
   ): SyncPipeline<TCurrent, TNext, TCurrent> {
     if (typeof f != "function") {
-      throw new TypeError("Argument must be a function.");
+      throw new TypeError("Argument must be a function.")
     }
 
-    return new SyncPipeline([f]);
+    return new SyncPipeline([f])
   }
 
   public static from<TCurrent, TNext>(fs: Function[]): SyncPipeline<TCurrent, TNext, TCurrent> {
     fs.forEach((f) => {
       if (typeof f != "function") {
-        throw new TypeError("Argument must only include functions.");
+        throw new TypeError("Argument must only include functions.")
       }
-    });
+    })
 
-    return new SyncPipeline(fs);
+    return new SyncPipeline(fs)
   }
 
   public static empty<TCurrent, TNext = TCurrent, TReserved = TCurrent>(): SyncPipeline<
@@ -26,23 +26,23 @@ export class SyncPipeline<TCurrent, TNext, TReserved = TCurrent> {
     TNext,
     TReserved
   > {
-    return new SyncPipeline([]);
+    return new SyncPipeline([])
   }
 
-  public static "fantasy-land/empty" = SyncPipeline.empty;
+  public static "fantasy-land/empty" = SyncPipeline.empty
 
   public get fs() {
-    return this._fs;
+    return this._fs
   }
 
   protected constructor(protected readonly _fs: Function[]) {}
 
   public pipe<TNext>(f: (x: TCurrent) => TNext): SyncPipeline<TNext, TNext, TReserved> {
-    return (SyncPipeline.from([...this.fs, f]) as unknown) as SyncPipeline<TNext, TNext, TReserved>;
+    return (SyncPipeline.from([...this.fs, f]) as unknown) as SyncPipeline<TNext, TNext, TReserved>
   }
 
   public pipeTap<K>(f: (x: TCurrent) => K): SyncPipeline<TCurrent, TCurrent, TReserved> {
-    return (this.pipe(tap(f)) as unknown) as SyncPipeline<TCurrent, TCurrent, TReserved>;
+    return (this.pipe(tap(f)) as unknown) as SyncPipeline<TCurrent, TCurrent, TReserved>
   }
 
   public pipeExtend<TNext>(
@@ -52,7 +52,7 @@ export class SyncPipeline<TCurrent, TNext, TReserved = TCurrent> {
       TCurrent & TNext,
       TCurrent & TNext,
       TReserved
-    >;
+    >
   }
 
   public concat<TOther extends SyncPipeline<TCurrent, TNext>>(
@@ -62,24 +62,24 @@ export class SyncPipeline<TCurrent, TNext, TReserved = TCurrent> {
       TOther extends SyncPipeline<TCurrent, infer U> ? U : never,
       TNext,
       TReserved
-    >;
+    >
   }
 
-  public "fantasy-land/concat" = this.concat;
+  public "fantasy-land/concat" = this.concat
 
   public process(f: () => TReserved): TNext {
-    return this._fs.reduce((acc, fn) => fn(acc), f() as unknown) as TNext;
+    return this._fs.reduce((acc, fn) => fn(acc), f() as unknown) as TNext
   }
 }
 
 export function pipe<TCurrent, TNext = TCurrent>(
   f: (x: TCurrent) => TNext,
 ): SyncPipeline<TCurrent, TNext, TCurrent> {
-  return SyncPipeline.of(f);
+  return SyncPipeline.of(f)
 }
 
 export function pipeExtend<TCurrent, TNext = TCurrent>(
   f: (x: TCurrent) => TNext,
 ): SyncPipeline<TCurrent, TCurrent & TNext, TCurrent> {
-  return SyncPipeline.empty<TCurrent, TCurrent & TNext>().pipeExtend(f);
+  return SyncPipeline.empty<TCurrent, TCurrent & TNext>().pipeExtend(f)
 }

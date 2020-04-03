@@ -1,4 +1,4 @@
-import { extend, tap } from "./helpers";
+import { extend, tap } from "./helpers"
 
 describe("helpers", () => {
   describe("extend", () => {
@@ -6,21 +6,21 @@ describe("helpers", () => {
       expect(extend(() => ({ success: true }))({ test: "test" })).toEqual({
         test: "test",
         success: true,
-      });
-    });
+      })
+    })
 
     it("should work with arrays", () => {
-      expect(extend(() => ["foo"])(["bar"])).toEqual(["bar", "foo"]);
-    });
-  });
+      expect(extend(() => ["foo"])(["bar"])).toEqual(["bar", "foo"])
+    })
+  })
 
   describe("tap", () => {
     it("should call the function provided first with the argument provided last and return the argument", () => {
-      const fn = jest.fn((_) => false);
+      const fn = jest.fn((_) => false)
 
-      expect(tap(fn)("test")).toEqual("test");
-      expect(fn).toBeCalledWith("test");
-      expect(fn).toBeCalledTimes(1);
-    });
-  });
-});
+      expect(tap(fn)("test")).toEqual("test")
+      expect(fn).toBeCalledWith("test")
+      expect(fn).toBeCalledTimes(1)
+    })
+  })
+})
