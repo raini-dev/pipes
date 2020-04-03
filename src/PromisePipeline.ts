@@ -37,6 +37,8 @@ export class PromisePipeline<TCurrent, TNext, TReserved = TCurrent> {
     return this._fs;
   }
 
+  public static "fantasy-land/empty" = PromisePipeline.empty;
+
   protected constructor(protected readonly _fs: Function[]) {}
 
   public pipe<TNext>(
@@ -94,6 +96,8 @@ export class PromisePipeline<TCurrent, TNext, TReserved = TCurrent> {
       TReserved
     >;
   }
+
+  public "fantasy-land/concat" = this.concat;
 
   public async process(f: () => TReserved): Promise<TNext> {
     let result: TNext = (f() as unknown) as TNext;

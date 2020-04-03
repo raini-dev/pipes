@@ -29,6 +29,8 @@ export class SyncPipeline<TCurrent, TNext, TReserved = TCurrent> {
     return new SyncPipeline([]);
   }
 
+  public static "fantasy-land/empty" = SyncPipeline.empty;
+
   public get fs() {
     return this._fs;
   }
@@ -62,6 +64,8 @@ export class SyncPipeline<TCurrent, TNext, TReserved = TCurrent> {
       TReserved
     >;
   }
+
+  public "fantasy-land/concat" = this.concat;
 
   public process(f: () => TReserved): TNext {
     return this._fs.reduce((acc, fn) => fn(acc), f() as unknown) as TNext;
