@@ -1,18 +1,5 @@
 import { extend, tap } from "./helpers";
 
-// export interface IPipe<TProcess, TCurrent> {
-//   map<TNext>(
-//     f: (x: TCurrent) => TNext
-//   ): IPipe<TProcess, TNext extends Promise<infer P> ? P : TNext>;
-//   fs: Array<Function>;
-//   process: TProcess;
-// }
-
-// export interface ISyncPipe<TCurrent, TNext, TReserved>
-//   extends IPipe<(f: () => TReserved) => TNext, TCurrent> {
-//   process(f: () => TReserved): TNext;
-// }
-
 export class SyncPipeline<TCurrent, TNext, TReserved = TCurrent> {
   public static of<TCurrent, TNext>(
     f: (x: TCurrent) => TNext,
