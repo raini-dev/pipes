@@ -36,27 +36,35 @@ export class SyncPipeline<TCurrent, TNext, TReserved = TCurrent> {
   protected constructor(protected readonly _fs: Function[]) {}
 
   public pipe<TNext>(f: (x: TCurrent) => TNext): SyncPipeline<TNext, TNext, TReserved> {
-    return SyncPipeline.from([...this.fs, f]) as any;
+    return (SyncPipeline.from([...this.fs, f]) as unknown) as SyncPipeline<TNext, TNext, TReserved>;
   }
 
-  public pipeTap(f: (x: TCurrent) => any): SyncPipeline<TCurrent, TCurrent, TReserved> {
-    return this.pipe(tap(f)) as any;
+  public pipeTap<K>(f: (x: TCurrent) => K): SyncPipeline<TCurrent, TCurrent, TReserved> {
+    return (this.pipe(tap(f)) as unknown) as SyncPipeline<TCurrent, TCurrent, TReserved>;
   }
 
   public pipeExtend<TNext>(
     f: (x: TCurrent) => TNext,
   ): SyncPipeline<TCurrent & TNext, TCurrent & TNext, TReserved> {
-    return this.pipe(extend(f)) as any;
+    return (this.pipe(extend(f)) as unknown) as SyncPipeline<
+      TCurrent & TNext,
+      TCurrent & TNext,
+      TReserved
+    >;
   }
 
   public concat<TOther extends SyncPipeline<TCurrent, TNext>>(
     o: TOther,
   ): SyncPipeline<TOther extends SyncPipeline<TCurrent, infer U> ? U : never, TNext, TReserved> {
-    return SyncPipeline.from(this.fs.concat(o.fs)) as any;
+    return (SyncPipeline.from(this.fs.concat(o.fs)) as unknown) as SyncPipeline<
+      TOther extends SyncPipeline<TCurrent, infer U> ? U : never,
+      TNext,
+      TReserved
+    >;
   }
 
   public process(f: () => TReserved): TNext {
-    return this._fs.reduce((acc, fn) => fn(acc), f() as any);
+    return this._fs.reduce((acc, fn) => fn(acc), f() as unknown) as TNext;
   }
 }
 
