@@ -11,7 +11,9 @@ export class SyncPipeline<TCurrent, TNext, TReserved = TCurrent> {
     return new SyncPipeline([f])
   }
 
-  public static from<TCurrent, TNext>(fs: Function[]): SyncPipeline<TCurrent, TNext, TCurrent> {
+  public static from<TCurrent, TNext, TReserved = TCurrent>(
+    fs: Function[],
+  ): SyncPipeline<TCurrent, TNext, TReserved> {
     fs.forEach((f) => {
       if (typeof f != "function") {
         throw new TypeError("Argument must only include functions.")
@@ -58,11 +60,7 @@ export class SyncPipeline<TCurrent, TNext, TReserved = TCurrent> {
   public concat<TOther extends SyncPipeline<TCurrent, TNext>>(
     o: TOther,
   ): SyncPipeline<TOther extends SyncPipeline<TCurrent, infer U> ? U : never, TNext, TReserved> {
-    return (SyncPipeline.from(this.fs.concat(o.fs)) as unknown) as SyncPipeline<
-      TOther extends SyncPipeline<TCurrent, infer U> ? U : never,
-      TNext,
-      TReserved
-    >
+    return SyncPipeline.from(this.fs.concat(o.fs))
   }
 
   public "fantasy-land/concat" = this.concat
