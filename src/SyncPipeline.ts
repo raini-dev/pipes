@@ -1,4 +1,4 @@
-import { extend, tap } from "./helpers"
+import { extend, tap, TMergeResult } from "./helpers"
 
 export class SyncPipeline<TCurrent, TNext, TReserved = TCurrent> {
   public static of<TCurrent, TNext>(
@@ -40,21 +40,17 @@ export class SyncPipeline<TCurrent, TNext, TReserved = TCurrent> {
   protected constructor(protected readonly _fs: Function[]) {}
 
   public pipe<TNext>(f: (x: TCurrent) => TNext): SyncPipeline<TNext, TNext, TReserved> {
-    return (SyncPipeline.from([...this.fs, f]) as unknown) as SyncPipeline<TNext, TNext, TReserved>
+    return SyncPipeline.from([...this.fs, f])
   }
 
   public pipeTap<K>(f: (x: TCurrent) => K): SyncPipeline<TCurrent, TCurrent, TReserved> {
-    return (this.pipe(tap(f)) as unknown) as SyncPipeline<TCurrent, TCurrent, TReserved>
+    return this.pipe(tap(f))
   }
 
   public pipeExtend<TNext>(
     f: (x: TCurrent) => TNext,
-  ): SyncPipeline<TCurrent & TNext, TCurrent & TNext, TReserved> {
-    return (this.pipe(extend(f)) as unknown) as SyncPipeline<
-      TCurrent & TNext,
-      TCurrent & TNext,
-      TReserved
-    >
+  ): SyncPipeline<TMergeResult<TCurrent, TNext>, TMergeResult<TCurrent, TNext>, TReserved> {
+    return this.pipe(extend(f))
   }
 
   public concat<TOther extends SyncPipeline<TCurrent, TNext>>(
@@ -76,8 +72,12 @@ export function pipe<TCurrent, TNext = TCurrent>(
   return SyncPipeline.of(f)
 }
 
-export function pipeExtend<TCurrent, TNext = TCurrent>(
+export function pipeExtend<TCurrent, TNext = TCurrent, TReserved = TCurrent>(
   f: (x: TCurrent) => TNext,
-): SyncPipeline<TCurrent, TCurrent & TNext, TCurrent> {
-  return SyncPipeline.empty<TCurrent, TCurrent & TNext>().pipeExtend(f)
+) {
+  return SyncPipeline.empty<
+    TMergeResult<TCurrent, TNext>,
+    TMergeResult<TCurrent, TNext>,
+    TReserved
+  >().pipeExtend(f as any)
 }

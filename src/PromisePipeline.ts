@@ -1,13 +1,9 @@
-import { extend, tap } from "./helpers"
+import { extend, tap, TMergeResult } from "./helpers"
 
 export class PromisePipeline<TCurrent, TNext, TReserved = TCurrent> {
-  public static of<TCurrent, TNext>(
+  public static of<TCurrent, TNext, TReserved = TCurrent>(
     f: (x: TCurrent) => TNext,
-  ): PromisePipeline<
-    TCurrent extends Promise<infer U> ? U : TCurrent,
-    TNext extends Promise<infer U> ? U : TNext,
-    TCurrent extends Promise<infer U> ? U : TCurrent
-  > {
+  ): PromisePipeline<TCurrent extends Promise<infer U> ? U : TCurrent, TNext, TReserved> {
     if (typeof f != "function") {
       throw new TypeError("Argument must be a function.")
     }
@@ -15,7 +11,9 @@ export class PromisePipeline<TCurrent, TNext, TReserved = TCurrent> {
     return new PromisePipeline([f])
   }
 
-  public static from<TCurrent, TNext>(fs: Function[]): PromisePipeline<TCurrent, TNext, TCurrent> {
+  public static from<TCurrent, TNext, TReserved = TCurrent>(
+    fs: Function[],
+  ): PromisePipeline<TCurrent, TNext, TReserved> {
     fs.forEach((f) => {
       if (typeof f != "function") {
         throw new TypeError("Argument must only include functions.")
@@ -27,8 +25,8 @@ export class PromisePipeline<TCurrent, TNext, TReserved = TCurrent> {
 
   public static empty<TCurrent, TNext = TCurrent, TReserved = TCurrent>(): PromisePipeline<
     TCurrent extends Promise<infer U> ? U : TCurrent,
-    TNext extends Promise<infer U> ? U : TNext,
-    TReserved extends Promise<infer U> ? U : TCurrent
+    TNext,
+    TReserved
   > {
     return new PromisePipeline([])
   }
@@ -41,60 +39,32 @@ export class PromisePipeline<TCurrent, TNext, TReserved = TCurrent> {
 
   protected constructor(protected readonly _fs: Function[]) {}
 
-  public pipe<TNext>(
-    f: (x: TCurrent) => TNext,
-  ): PromisePipeline<
-    TNext extends Promise<infer U> ? U : TNext,
-    TNext extends Promise<infer U> ? U : TNext,
-    TReserved
-  > {
-    return PromisePipeline.from([...this.fs, f]) as PromisePipeline<
-      TNext extends Promise<infer U> ? U : TNext,
-      TNext extends Promise<infer U> ? U : TNext,
-      TReserved
-    >
+  public pipe<TNext>(f: (x: TCurrent) => TNext): PromisePipeline<TNext, TNext, TReserved> {
+    return PromisePipeline.from([...this.fs, f])
   }
 
-  public pipeTap<K>(
-    f: (x: TCurrent) => K,
-  ): PromisePipeline<
-    TCurrent extends Promise<infer U> ? U : TCurrent,
-    TCurrent extends Promise<infer U> ? U : TCurrent,
-    TReserved
-  > {
-    return this.pipe(tap(f)) as PromisePipeline<
-      TCurrent extends Promise<infer U> ? U : TCurrent,
-      TCurrent extends Promise<infer U> ? U : TCurrent,
-      TReserved
-    >
+  public pipeTap<K>(f: (x: TCurrent) => K): PromisePipeline<TCurrent, TCurrent, TReserved> {
+    return this.pipe(tap(f))
   }
 
   public pipeExtend<TNext>(
     f: (x: TCurrent) => TNext,
-  ): PromisePipeline<
-    TCurrent extends Promise<infer U> ? U : TCurrent & TNext extends Promise<infer U> ? U : TNext,
-    TCurrent extends Promise<infer U> ? U : TCurrent & TNext extends Promise<infer U> ? U : TNext,
-    TReserved
-  > {
-    return this.pipe(extend(f)) as PromisePipeline<
-      TCurrent extends Promise<infer U> ? U : TCurrent & TNext extends Promise<infer U> ? U : TNext,
-      TCurrent extends Promise<infer U> ? U : TCurrent & TNext extends Promise<infer U> ? U : TNext,
-      TReserved
-    >
+  ): PromisePipeline<TMergeResult<TCurrent, TNext>, TMergeResult<TCurrent, TNext>, TReserved> {
+    return this.pipe(extend(f))
   }
 
   public concat<TOther extends PromisePipeline<TCurrent, TNext>>(
     o: TOther,
   ): PromisePipeline<
-    TOther extends PromisePipeline<TCurrent, infer U> ? U : never,
-    TNext extends Promise<infer U> ? U : TNext,
+    TOther extends PromisePipeline<TCurrent, infer U>
+      ? U extends Promise<infer G>
+        ? G
+        : U
+      : never,
+    TNext,
     TReserved
   > {
-    return PromisePipeline.from(this.fs.concat(o.fs)) as PromisePipeline<
-      TOther extends PromisePipeline<TCurrent, infer U> ? U : never,
-      TNext extends Promise<infer U> ? U : TNext,
-      TReserved
-    >
+    return PromisePipeline.from(this.fs.concat(o.fs))
   }
 
   public "fantasy-land/concat" = this.concat
@@ -110,32 +80,16 @@ export class PromisePipeline<TCurrent, TNext, TReserved = TCurrent> {
   }
 }
 
-export function pipeP<TCurrent, TNext = TCurrent, TReserved = TCurrent>(
-  f: (x: TCurrent) => TNext,
-): PromisePipeline<
-  TCurrent extends Promise<infer U> ? U : TCurrent,
-  TNext extends Promise<infer U> ? U : TNext,
-  TReserved extends Promise<infer U> ? U : TCurrent
-> {
-  return (PromisePipeline.of(f) as unknown) as PromisePipeline<
-    TCurrent extends Promise<infer U> ? U : TCurrent,
-    TNext extends Promise<infer U> ? U : TNext,
-    TReserved extends Promise<infer U> ? U : TCurrent
-  >
+export function pipeP<TCurrent, TNext = TCurrent, TReserved = TCurrent>(f: (x: TCurrent) => TNext) {
+  return PromisePipeline.of<TCurrent, TNext, TReserved>(f)
 }
 
 export function pipeExtendP<TCurrent, TNext = TCurrent, TReserved = TCurrent>(
   f: (x: TCurrent) => TNext,
-): PromisePipeline<
-  TCurrent extends Promise<infer U> ? U : TCurrent & TNext extends Promise<infer U> ? U : TNext,
-  TCurrent extends Promise<infer U> ? U : TCurrent & TNext extends Promise<infer U> ? U : TNext,
-  TReserved
-> {
-  return PromisePipeline.empty<TCurrent>().pipeExtend(
-    (f as unknown) as (x: TCurrent extends Promise<infer U> ? U : TCurrent) => TNext,
-  ) as PromisePipeline<
-    TCurrent extends Promise<infer U> ? U : TCurrent & TNext extends Promise<infer U> ? U : TNext,
-    TCurrent extends Promise<infer U> ? U : TCurrent & TNext extends Promise<infer U> ? U : TNext,
+): PromisePipeline<TMergeResult<TCurrent, TNext>, TMergeResult<TCurrent, TNext>, TReserved> {
+  return PromisePipeline.empty<
+    TMergeResult<TCurrent, TNext>,
+    TMergeResult<TCurrent, TNext>,
     TReserved
-  >
+  >().pipeExtend(f as any) as any
 }
