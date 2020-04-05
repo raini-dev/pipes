@@ -88,7 +88,7 @@ describe("SyncPipe", () => {
         })
           .process(() => {})
           .catch(id),
-      )
+      ).toHaveProperty("message", "message")
     })
   })
 })
