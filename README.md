@@ -53,6 +53,11 @@ PromisePipeline.of(addSpaceIfMissing)
   .then(exit)
 ```
 
+#### PromisePipeline Helpers
+
+- **pipeP** is equivalent to `PromisePipeline.empty().pipe`
+- **pipeExtendP** is equivalent to `PromisePipeline.empty().pipeExtend`
+
 ### SyncPipeline
 
 ```typescript
@@ -81,3 +86,8 @@ const result2 = SyncPipeline.of(filterOutOddNumbers)
 
 log(result2) // [ 1, 3, 5, 2, 6, 10 ]
 ```
+
+#### SyncPipeline Helpers
+
+- **pipe** is equivalent to `SyncPipeline.empty().pipe`
+- **pipeExtend** is equivalent to `SyncPipeline.empty().pipeExtend`
