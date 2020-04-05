@@ -1,7 +1,7 @@
 # @raini/pipes
 
-[![Build Status](https://travis-ci.org/Raini-js/pipes.svg?branch=master)](https://travis-ci.org/Raini-js/pipes)
-[![codecov](https://codecov.io/gh/Raini-js/pipes/branch/master/graph/badge.svg)](https://codecov.io/gh/Raini-js/pipes)
+[![Build Status](https://travis-ci.org/raini-dev/pipes.svg?branch=master)](https://travis-ci.org/raini-dev/pipes)
+[![codecov](https://codecov.io/gh/raini-dev/pipes/branch/master/graph/badge.svg)](https://codecov.io/gh/raini-dev/pipes)
 [![npm](https://img.shields.io/npm/dt/@raini/pipes.svg)](https://www.npmjs.com/package/@raini/pipes)
 [![npm](https://img.shields.io/npm/v/@raini/pipes.svg)](https://www.npmjs.com/package/@raini/pipes)
 [![licence: MIT](https://img.shields.io/npm/l/@raini/pipes.svg)](https://github.com/raini/pipes)
