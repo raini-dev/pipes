@@ -77,7 +77,7 @@ describe("SyncPipe", () => {
       expect(
         await PromisePipeline.empty<string>()
           .pipe((x) => x.toUpperCase())
-          .process(() => "test"),
+          .process(() => Promise.resolve("test")),
       ).toEqual("TEST")
     })
 
@@ -101,7 +101,7 @@ describe("pipeP", () => {
   })
 
   it("should pipe the function provided as an argument", async () => {
-    expect(await pipeP(f).process(() => "1")).toEqual(1)
+    expect(await pipeP(f).process(() => Promise.resolve("1"))).toEqual(1)
   })
 })
 
@@ -113,6 +113,9 @@ describe("pipeExtendP", () => {
   })
 
   it("should pipeExtend the function provided as an argument", async () => {
-    expect(await pipeExtendP(f).process(() => ({ x: "test" }))).toEqual({ x: "test", y: "test" })
+    expect(await pipeExtendP(f).process(() => Promise.resolve({ x: "test" }))).toEqual({
+      x: "test",
+      y: "test",
+    })
   })
 })

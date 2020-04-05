@@ -1,9 +1,9 @@
-import { extend, tap, TMergeResult } from "./helpers"
+import { extend, tap, TUnwrap } from "./helpers"
 
 export class PromisePipeline<TCurrent, TNext, TReserved = TCurrent> {
   public static of<TCurrent, TNext, TReserved = TCurrent>(
     f: (x: TCurrent) => TNext,
-  ): PromisePipeline<TCurrent extends Promise<infer U> ? U : TCurrent, TNext, TReserved> {
+  ): PromisePipeline<TCurrent, TNext, TReserved> {
     if (typeof f != "function") {
       throw new TypeError("Argument must be a function.")
     }
@@ -24,7 +24,7 @@ export class PromisePipeline<TCurrent, TNext, TReserved = TCurrent> {
   }
 
   public static empty<TCurrent, TNext = TCurrent, TReserved = TCurrent>(): PromisePipeline<
-    TCurrent extends Promise<infer U> ? U : TCurrent,
+    TUnwrap<Promise<TCurrent>>,
     TNext,
     TReserved
   > {
@@ -39,17 +39,25 @@ export class PromisePipeline<TCurrent, TNext, TReserved = TCurrent> {
 
   protected constructor(protected readonly _fs: Function[]) {}
 
-  public pipe<TNext>(f: (x: TCurrent) => TNext): PromisePipeline<TNext, TNext, TReserved> {
+  public pipe<TNext>(
+    f: (x: TCurrent) => TNext,
+  ): PromisePipeline<TUnwrap<TNext>, TUnwrap<TNext>, TReserved> {
     return PromisePipeline.from([...this.fs, f])
   }
 
-  public pipeTap<K>(f: (x: TCurrent) => K): PromisePipeline<TCurrent, TCurrent, TReserved> {
+  public pipeTap<K>(
+    f: (x: TCurrent) => K,
+  ): PromisePipeline<TUnwrap<TCurrent>, TUnwrap<TCurrent>, TReserved> {
     return this.pipe(tap(f))
   }
 
   public pipeExtend<TNext>(
     f: (x: TCurrent) => TNext,
-  ): PromisePipeline<TMergeResult<TCurrent, TNext>, TMergeResult<TCurrent, TNext>, TReserved> {
+  ): PromisePipeline<
+    TUnwrap<TCurrent> & TUnwrap<TNext>,
+    TUnwrap<TCurrent> & TUnwrap<TNext>,
+    TReserved
+  > {
     return this.pipe(extend(f))
   }
 
@@ -69,8 +77,8 @@ export class PromisePipeline<TCurrent, TNext, TReserved = TCurrent> {
 
   public "fantasy-land/concat" = this.concat
 
-  public async process(f: () => TReserved): Promise<TNext> {
-    let result: TNext = (f() as unknown) as TNext
+  public async process(thunk: () => TReserved | Promise<TReserved>): Promise<TNext> {
+    let result: TNext = ((await thunk()) as unknown) as TNext
 
     for (let i = 0; i < this._fs.length; i++) {
       result = await this._fs[i](result)
@@ -80,16 +88,24 @@ export class PromisePipeline<TCurrent, TNext, TReserved = TCurrent> {
   }
 }
 
-export function pipeP<TCurrent, TNext = TCurrent, TReserved = TCurrent>(f: (x: TCurrent) => TNext) {
-  return PromisePipeline.of<TCurrent, TNext, TReserved>(f)
+export function pipeP<TCurrent, TNext = TCurrent, TReserved = TCurrent>(
+  f: (x: TCurrent) => TUnwrap<TNext>,
+) {
+  return PromisePipeline.empty<TCurrent, TNext, TReserved>().pipe(f)
+}
+
+export function pipeTapP<TCurrent, TNext = TCurrent, TReserved = TCurrent>(
+  f: (x: TCurrent) => TUnwrap<TNext>,
+) {
+  return PromisePipeline.empty<TCurrent, TCurrent, TReserved>().pipeTap(f)
 }
 
 export function pipeExtendP<TCurrent, TNext = TCurrent, TReserved = TCurrent>(
   f: (x: TCurrent) => TNext,
-): PromisePipeline<TMergeResult<TCurrent, TNext>, TMergeResult<TCurrent, TNext>, TReserved> {
+) {
   return PromisePipeline.empty<
-    TMergeResult<TCurrent, TNext>,
-    TMergeResult<TCurrent, TNext>,
+    TUnwrap<TCurrent> & TUnwrap<TNext>,
+    TUnwrap<TCurrent> & TUnwrap<TNext>,
     TReserved
-  >().pipeExtend(f as any) as any
+  >().pipeExtend(f as any)
 }

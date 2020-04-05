@@ -1,4 +1,4 @@
-import { extend, tap, TMergeResult } from "./helpers"
+import { extend, tap } from "./helpers"
 
 export class SyncPipeline<TCurrent, TNext, TReserved = TCurrent> {
   public static of<TCurrent, TNext>(
@@ -49,7 +49,7 @@ export class SyncPipeline<TCurrent, TNext, TReserved = TCurrent> {
 
   public pipeExtend<TNext>(
     f: (x: TCurrent) => TNext,
-  ): SyncPipeline<TMergeResult<TCurrent, TNext>, TMergeResult<TCurrent, TNext>, TReserved> {
+  ): SyncPipeline<TCurrent & TNext, TCurrent & TNext, TReserved> {
     return this.pipe(extend(f))
   }
 
@@ -61,8 +61,8 @@ export class SyncPipeline<TCurrent, TNext, TReserved = TCurrent> {
 
   public "fantasy-land/concat" = this.concat
 
-  public process(f: () => TReserved): TNext {
-    return this._fs.reduce((acc, fn) => fn(acc), f() as unknown) as TNext
+  public process(thunk: () => TReserved): TNext {
+    return this._fs.reduce((acc, fn) => fn(acc), thunk() as unknown) as TNext
   }
 }
 
@@ -74,10 +74,6 @@ export function pipe<TCurrent, TNext = TCurrent>(
 
 export function pipeExtend<TCurrent, TNext = TCurrent, TReserved = TCurrent>(
   f: (x: TCurrent) => TNext,
-) {
-  return SyncPipeline.empty<
-    TMergeResult<TCurrent, TNext>,
-    TMergeResult<TCurrent, TNext>,
-    TReserved
-  >().pipeExtend(f as any)
+): SyncPipeline<TCurrent, TCurrent & TNext, TReserved> {
+  return SyncPipeline.empty<TCurrent & TNext, TCurrent & TNext, TReserved>().pipeExtend(f)
 }
