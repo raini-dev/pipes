@@ -1,4 +1,4 @@
-import { PromisePipeline, pipeP, pipeExtendP } from "./PromisePipeline"
+import { PromisePipeline, pipeP, pipeExtendP, pipeTapP } from "./PromisePipeline"
 
 const f = <T>(x: T): T => x
 const id = <T>(x: T): T => x
@@ -117,5 +117,18 @@ describe("pipeExtendP", () => {
       x: "test",
       y: "test",
     })
+  })
+})
+
+describe("pipeTapP", () => {
+  const mock = jest.fn(() => {})
+
+  it("should return a PromisePipeline", () => {
+    expect(pipeTapP(mock)).toBeInstanceOf(PromisePipeline)
+  })
+
+  it("should pipeTap the function provided as an argument", async () => {
+    expect(await pipeTapP(mock).process(() => Promise.resolve(1))).toEqual(1)
+    expect(mock).toBeCalledWith(1)
   })
 })

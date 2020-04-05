@@ -72,6 +72,12 @@ export function pipe<TCurrent, TNext = TCurrent>(
   return SyncPipeline.of(f)
 }
 
+export function pipeTap<TCurrent, TNext = TCurrent, TReserved = TCurrent>(
+  f: (x: TCurrent) => TNext,
+): SyncPipeline<TCurrent, TCurrent, TReserved> {
+  return SyncPipeline.empty<TCurrent, TNext, TReserved>().pipeTap(f)
+}
+
 export function pipeExtend<TCurrent, TNext = TCurrent, TReserved = TCurrent>(
   f: (x: TCurrent) => TNext,
 ): SyncPipeline<TCurrent, TCurrent & TNext, TReserved> {

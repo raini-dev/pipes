@@ -57,6 +57,7 @@ PromisePipeline.of(addSpaceIfMissing)
 
 - **pipeP** is equivalent to `PromisePipeline.empty().pipe`
 - **pipeExtendP** is equivalent to `PromisePipeline.empty().pipeExtend`
+- **pipeTapP** is equivalent to `PromisePipeline.empty().pipeTap`
 
 ### SyncPipeline
 
@@ -91,3 +92,4 @@ log(result2) // [ 1, 3, 5, 2, 6, 10 ]
 
 - **pipe** is equivalent to `SyncPipeline.empty().pipe`
 - **pipeExtend** is equivalent to `SyncPipeline.empty().pipeExtend`
+- **pipeTap** is equivalent to `SyncPipeline.empty().pipeTap`

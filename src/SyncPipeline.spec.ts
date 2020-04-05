@@ -1,4 +1,4 @@
-import { SyncPipeline, pipe, pipeExtend } from "./SyncPipeline"
+import { SyncPipeline, pipe, pipeExtend, pipeTap } from "./SyncPipeline"
 
 const f = <T>(): T => ({} as any)
 const id = <T>(x: T): T => x
@@ -104,5 +104,18 @@ describe("pipeExtend", () => {
 
   it("should pipeExtend the function provided as an argument", () => {
     expect(pipeExtend(f).process(() => ({ x: "test" }))).toEqual({ x: "test", y: "test" })
+  })
+})
+
+describe("pipeTap", () => {
+  const mock = jest.fn(() => {})
+
+  it("should return a PromisePipeline", () => {
+    expect(pipeTap(mock)).toBeInstanceOf(SyncPipeline)
+  })
+
+  it("should pipeTap the function provided as an argument", async () => {
+    expect(await pipeTap(mock).process(() => 1)).toEqual(1)
+    expect(mock).toBeCalledWith(1)
   })
 })
